@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arc · USDC Testnet Cüzdanı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a1120;
+    --bg-grid: #0d1526;
+    --surface: #111b30;
+    --surface-2: #16223b;
+    --border: #223256;
+    --border-soft: #1a2740;
+    --text: #eaf0fb;
+    --text-muted: #8695b3;
+    --text-faint: #556080;
+    --accent: #4d8bff;
+    --accent-soft: rgba(77,139,255,0.14);
+    --mint: #35d6a7;
+    --mint-soft: rgba(53,214,167,0.14);
+    --coral: #ff7a63;
+    --coral-soft: rgba(255,122,99,0.14);
+    --radius: 14px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(77,139,255,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(53,214,167,0.06), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  /* faint dot-grid texture, evokes a coordinate / network plane */
+  .grid-veil{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 26px 26px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  .app{
+    position:relative; z-index:1;
+    display:grid;
+    grid-template-columns: 240px 1fr;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    border-right: 1px solid var(--border-soft);
+    padding: 28px 18px;
+    display:flex; flex-direction:column;
+    gap: 28px;
+  }
+
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    padding: 0 6px;
+  }
+
+  .brand-mark{
+    width:32px; height:32px; flex-shrink:0;
+  }
+
+  .brand-name{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size:1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .brand-tag{
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--mint);
+    background: var(--mint-soft);
+    border: 1px solid rgba(53,214,167,0.3);
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.06em;
+    margin-left: auto;
+  }
+
+  nav{ display:flex; flex-direction:column; gap:2px; }
+
+  .nav-item{
+    display:flex; align-items:center; gap:11px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    font-size: 0.87rem;
+    color: var(--text-muted);
+    font-weight:500;
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-item svg{ width:17px; height:17px; opacity:0.85; flex-shrink:0; }
+  .nav-item:hover{ background: var(--surface-2); color: var(--text); }
+  .nav-item.active{
+    background: var(--accent-soft);
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px rgba(77,139,255,0.25);
+  }
+  .nav-item.active svg{ opacity:1; }
+
+  .faucet-card{
+    margin-top: auto;
+    background: linear-gradient(165deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .faucet-card h4{
+    font-family: var(--font-display);
+    font-size:0.85rem;
+    margin-bottom:4px;
+  }
+  .faucet-card p{
+    font-size:0.76rem;
+    color: var(--text-muted);
+    margin-bottom:12px;
+  }
+  .faucet-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:0.78rem; font-weight:600;
+    color: var(--bg);
+    background: var(--mint);
+    padding: 7px 12px;
+    border-radius: 8px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .faucet-btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px rgba(53,214,167,0.25); }
+
+  /* ---------- Main ---------- */
+  main{ padding: 28px 40px 60px; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom: 30px;
+  }
+  .topbar h1{
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .topbar .sub{
+    font-family: var(--font-mono);
+    font-size:0.78rem;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+  .status-dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--mint);
+    display:inline-block;
+    margin-right:6px;
+    box-shadow: 0 0 0 3px var(--mint-soft);
+  }
+
+  .connect-btn{
+    background: var(--accent);
+    color:#fff;
+    font-weight:600;
+    font-size:0.86rem;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 9px;
+    transition: filter .15s ease, transform .15s ease;
+    box-shadow: 0 8px 22px rgba(77,139,255,0.25);
+  }
+  .connect-btn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+  .connect-btn.connected{
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow:none;
+    border: 1px solid var(--border);
+  }
+
+  /* ---------- Hero balance ---------- */
+  .hero{
+    display:grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .balance-card{
+    background: linear-gradient(160deg, var(--surface) 0%, #0e1729 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 30px 34px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap: 30px;
+  }
+
+  .arc-gauge{ flex-shrink:0; }
+  .arc-gauge .track{ stroke: var(--border); }
+  .arc-gauge .fill{
+    stroke: var(--accent);
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px rgba(77,139,255,0.5));
+    stroke-dasharray: 251;
+    stroke-dashoffset: 251;
+    animation: draw-arc 1.4s cubic-bezier(.22,.9,.28,1) 0.2s forwards;
+  }
+  @keyframes draw-arc{ to{ stroke-dashoffset: 251; } }
+  .arc-gauge .tick{ stroke: var(--text-faint); opacity:0.5; }
+
+  .balance-label{
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .balance-amount{
+    font-family: var(--font-display);
+    font-size: 2.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height:1;
+  }
+  .balance-amount span{ color: var(--text-faint); font-size:1.5rem; font-weight:500; }
+  .balance-note{
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    max-width: 30ch;
+  }
+
+  .net-card{
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 26px 28px;
+    display:flex; flex-direction:column; justify-content:center; gap:14px;
+  }
+  .net-row{ display:flex; align-items:center; justify-content:space-between; }
+  .net-row .k{ font-size:0.82rem; color: var(--text-muted); }
+  .net-row .v{ font-family: var(--font-mono); font-size:0.86rem; font-weight:500; }
+  .net-row .v.mint{ color: var(--mint); }
+  .divider{ height:1px; background: var(--border-soft); }
+
+  /* ---------- Stat cards ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+  .stat{
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .stat:hover{ border-color: var(--border); transform: translateY(-2px); }
+  .stat .label{ font-size:0.76rem; color: var(--text-muted); margin-bottom:8px; }
+  .stat .value{ font-family: var(--font-display); font-size:1.5rem; font-weight:600; }
+  .stat .value.up{ color: var(--mint); }
+  .stat .value.down{ color: var(--coral); }
+  .stat .foot{ font-size:0.72rem; color: var(--text-faint); margin-top:4px; font-family: var(--font-mono); }
+
+  /* ---------- Two column: ledger + actions ---------- */
+  .grid-2{
+    display:grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 18px;
+  }
+
+  .panel{
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom: 16px;
+  }
+  .panel-head h2{
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight:600;
+  }
+  .panel-head a{
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight:500;
+  }
+
+  .tx-row{
+    display:grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items:center;
+    gap:14px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .tx-row:last-child{ border-bottom:none; }
+  .tx-icon{
+    width:34px; height:34px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .tx-icon.sent{ background: var(--coral-soft); color: var(--coral); }
+  .tx-icon.received{ background: var(--mint-soft); color: var(--mint); }
+  .tx-icon.swap{ background: var(--accent-soft); color: var(--accent); }
+  .tx-icon svg{ width:16px; height:16px; }
+
+  .tx-main .type{ font-size:0.86rem; font-weight:600; text-transform:capitalize; }
+  .tx-main .addr{ font-family: var(--font-mono); font-size:0.74rem; color: var(--text-faint); margin-top:2px; }
+
+  .tx-amt{ font-family: var(--font-mono); font-size:0.86rem; font-weight:500; text-align:right; }
+  .tx-amt.pos{ color: var(--mint); }
+  .tx-amt.neg{ color: var(--coral); }
+  .tx-time{ font-size:0.72rem; color: var(--text-faint); text-align:right; white-space:nowrap; }
+
+  .panel-note{
+    font-size:0.72rem; color: var(--text-faint); margin-top:14px;
+    border-top: 1px dashed var(--border-soft);
+    padding-top: 12px;
+  }
+
+  .actions-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .action{
+    display:flex; flex-direction:column; gap:10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color .15s ease, transform .15s ease, background .15s ease;
+  }
+  .action:hover{ border-color: var(--accent); transform: translateY(-2px); background: #172443; }
+  .action .ic{ width:30px; height:30px; border-radius:8px; background: var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; }
+  .action .ic svg{ width:15px; height:15px; }
+  .action span{ font-size:0.82rem; font-weight:600; }
+
+  .faucet-inline{
+    margin-top: 12px;
+    background: linear-gradient(160deg, var(--accent-soft), transparent);
+    border: 1px solid rgba(77,139,255,0.25);
+    border-radius: 12px;
+    padding: 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .faucet-inline .t{ font-size:0.82rem; font-weight:600; }
+  .faucet-inline .s{ font-size:0.72rem; color: var(--text-muted); }
+  .faucet-inline a{
+    background: var(--accent); color:#fff; font-size:0.76rem; font-weight:600;
+    padding: 7px 12px; border-radius:7px; white-space:nowrap;
+  }
+
+  @media (max-width: 980px){
+    .app{ grid-template-columns: 1fr; }
+    .sidebar{ display:none; }
+    .hero{ grid-template-columns: 1fr; }
+    .stats{ grid-template-columns: repeat(2,1fr); }
+    .grid-2{ grid-template-columns: 1fr; }
+    main{ padding: 20px; }
+  }
+
+  :focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce){
+    .arc-gauge .fill{ animation: none; stroke-dashoffset: 40; }
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-veil"></div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+        <path d="M4 24 A14 14 0 0 1 28 24" stroke="#4d8bff" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="4" cy="24" r="2" fill="#35d6a7"/>
+        <circle cx="28" cy="24" r="2" fill="#4d8bff"/>
+      </svg>
+      <span class="brand-name">Arc</span>
+      <span class="brand-tag">TESTNET</span>
+    </div>
+
+    <nav>
+      <a class="nav-item active" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Panel
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg>
+        Cüzdan
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 11V6a3 3 0 0 1 6 0"/><path d="M17 13v5a3 3 0 0 1-6 0"/><path d="M4 11h9M11 13h9" stroke-linecap="round"/></svg>
+        Gönder / Al
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h13l-3-3M20 16H7l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Takas
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l2-7 4 14 2-7h6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Akışlar
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c0-3 2.5-5 6-5s6 2 6 5M10 20c0-3 2.5-5 6-5s6 2 6 5"/></svg>
+        Ortak Ödeme
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke-linecap="round"/></svg>
+        Faturalar
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/></svg>
+        Ayarlar
+      </a>
+    </nav>
+
+    <div class="faucet-card">
+      <h4>Test USDC gerekiyor mu?</h4>
+      <p>Circle musluğundan ücretsiz test tokenleri talep et.</p>
+      <a class="faucet-btn" href="https://faucet.circle.com" target="_blank" rel="noopener">Musluğu aç →</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="topbar">
+      <div>
+        <h1>Panel</h1>
+        <div class="sub"><span class="status-dot"></span>Arc Testnet · Cüzdan bağlı değil</div>
+      </div>
+      <button class="connect-btn" id="connectBtn">Cüzdanı Bağla</button>
+    </div>
+
+    <section class="hero">
+      <div class="balance-card">
+        <svg class="arc-gauge" width="120" height="120" viewBox="0 0 120 120">
+          <circle class="track" cx="60" cy="60" r="40" fill="none" stroke-width="8"/>
+          <circle class="fill" cx="60" cy="60" r="40" fill="none" stroke-width="8"
+            transform="rotate(-90 60 60)"/>
+          <g class="tick">
+            <line x1="60" y1="14" x2="60" y2="20"/>
+            <line x1="106" y1="60" x2="100" y2="60"/>
+            <line x1="60" y1="106" x2="60" y2="100"/>
+            <line x1="14" y1="60" x2="20" y2="60"/>
+          </g>
+          <text x="60" y="65" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="#8695b3">USDC</text>
+        </svg>
+        <div>
+          <div class="balance-label">Toplam Bakiye</div>
+          <div class="balance-amount">$0<span>.00</span></div>
+          <div class="balance-note">Arc Testnet üzerinde USDC. Canlı bakiyeni görmek için bir cüzdan bağla.</div>
+        </div>
+      </div>
+
+      <div class="net-card">
+        <div class="net-row"><span class="k">Ağ</span><span class="v">Arc Testnet</span></div>
+        <div class="divider"></div>
+        <div class="net-row"><span class="k">Durum</span><span class="v mint">● Çevrimiçi</span></div>
+        <div class="divider"></div>
+        <div class="net-row"><span class="k">Ort. TPS</span><span class="v">~2.400</span></div>
+        <div class="divider"></div>
+        <div class="net-row"><span class="k">Gas ücreti</span><span class="v">USDC ile ödenir</span></div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="label">Gönderilen</div>
+        <div class="value down">$50.00</div>
+        <div class="foot">bu ay</div>
+      </div>
+      <div class="stat">
+        <div class="label">Alınan</div>
+        <div class="value up">$100.00</div>
+        <div class="foot">bu ay</div>
+      </div>
+      <div class="stat">
+        <div class="label">İşlemler</div>
+        <div class="value">3</div>
+        <div class="foot">toplam</div>
+      </div>
+      <div class="stat">
+        <div class="label">Ağ</div>
+        <div class="value">~2.400</div>
+        <div class="foot">Arc Testnet TPS</div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Son İşlemler</h2>
+          <a href="#">Tümünü Gör</a>
+        </div>
+
+        <div class="tx-row">
+          <div class="tx-icon sent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M17 7H8M17 7v9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tx-main"><div class="type">Gönderildi</div><div class="addr">0x1234...5678</div></div>
+          <div class="tx-amt neg">-50 USDC</div>
+          <div class="tx-time">2s önce</div>
+        </div>
+
+        <div class="tx-row">
+          <div class="tx-icon received">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 7 7 17M7 17h9M7 17V8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tx-main"><div class="type">Alındı</div><div class="addr">0xabcd...efgh</div></div>
+          <div class="tx-amt pos">+100 USDC</div>
+          <div class="tx-time">5s önce</div>
+        </div>
+
+        <div class="tx-row">
+          <div class="tx-icon swap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h13l-3-3M20 16H7l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tx-main"><div class="type">Takas</div><div class="addr">USDC → EURC</div></div>
+          <div class="tx-amt">25 USDC</div>
+          <div class="tx-time">1g önce</div>
+        </div>
+
+        <div class="panel-note">Örnek veridir — canlı geçmiş için bir indeksleyici bağlayın.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Hızlı İşlemler</h2></div>
+        <div class="actions-grid">
+          <div class="action">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 11V6a3 3 0 0 1 6 0M4 11h9" stroke-linecap="round"/></svg></div>
+            <span>USDC Gönder</span>
+          </div>
+          <div class="action">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h13l-3-3M20 16H7l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span>Token Takas Et</span>
+          </div>
+          <div class="action">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8" stroke-linecap="round"/></svg></div>
+            <span>Fatura Oluştur</span>
+          </div>
+          <div class="action">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round"/></svg></div>
+            <span>Test USDC Al</span>
+          </div>
+        </div>
+
+        <div class="faucet-inline">
+          <div>
+            <div class="t">Arc Testnet Musluğu</div>
+            <div class="s">Ücretsiz test tokeni al</div>
+          </div>
+          <a href="https://faucet.circle.com" target="_blank" rel="noopener">Aç</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const btn = document.getElementById('connectBtn');
+  const sub = document.querySelector('.topbar .sub');
+  let connected = false;
+
+  btn.addEventListener('click', () => {
+    if (connected) return;
+    btn.textContent = 'Bağlanıyor…';
+    btn.disabled = true;
+    setTimeout(() => {
+      connected = true;
+      btn.textContent = '0x9F2c…41Ab';
+      btn.classList.add('connected');
+      btn.disabled = false;
+      sub.innerHTML = '<span class="status-dot"></span>Arc Testnet · Cüzdan bağlandı';
+    }, 900);
+  });
+
+  // animate arc gauge to a believable fill on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const fill = document.querySelector('.arc-gauge .fill');
+    const circumference = 2 * Math.PI * 40; // ~251
+    const pct = 0.62; // sample "network health" style fill
+    requestAnimationFrame(() => {
+      fill.style.strokeDashoffset = circumference * (1 - pct);
+    });
+  });
+</script>
+
+</body>
+</html>
